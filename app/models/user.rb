@@ -8,7 +8,7 @@ class User < ApplicationRecord
     validates :email, presence: true, length: {maximum: 255}, 
     format: { with: VALID_EMAIL_REGEX },
     uniqueness: true
-    validates :password, presence: true, length: {minimum: 6}
+    validates :password, presence: true, length: {minimum: 6}, allow_nil: true
 
     has_secure_password
 
@@ -28,6 +28,11 @@ class User < ApplicationRecord
     def remember
         self.remember_token = User.new_token
         update_attribute(:remember_digest, User.digest(remember_token))
+        remember_digest
+    end
+
+    def session_token
+        remember_digest || remember
     end
 
     # Returns true if the given token matches the digest
